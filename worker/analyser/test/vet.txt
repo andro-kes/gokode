@@ -1,2 +1,0 @@
-# github.com/andro-kes/gokode/worker/analyser/test
-vet: ./2.go:4:2: x - y (value of type int) is not used

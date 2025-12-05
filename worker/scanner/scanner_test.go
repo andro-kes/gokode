@@ -38,7 +38,7 @@ func TestScan(t *testing.T) {
 
 	scn.Jsoner.Write()
 
-	defer func(){
+	defer func() {
 		jsonFile.Close()
 	}()
 }

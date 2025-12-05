@@ -1,133 +1,191 @@
 # gokode
 
-A Go code analysis tool that provides metrics on code quality, including line counts, function counts, and linting results.
+A standalone Go CLI utility for comprehensive code analysis and quality metrics. `gokode` can be installed and run against any Go project, providing formatting, vetting, linting with fixes, cyclomatic complexity analysis, and test coverage reports.
 
 ## Features
 
-- Scan and analyze Go source files
-- Generate metrics reports in JSON format
-- Run `go vet` analysis
-- Format, lint, and fix code issues
-- Generate test coverage reports
+- **Format**: Automatically format code with `gofmt`
+- **Vet**: Run `go vet` analysis and save results
+- **Lint**: Run `golangci-lint` with JSON output and optional auto-fix
+- **Test**: Run Go tests with coverage reports (profile and HTML)
+- **Cyclomatic Complexity**: Analyze code complexity with `gocyclo`
+- **Tool Bootstrap**: Automatically install required tools if missing
+- **Metrics Reports**: All outputs saved to `metrics/` directory in target project
 
 ## Installation
 
-Clone the repository:
+Install `gokode` globally using Go:
+
+```bash
+go install github.com/andro-kes/gokode/cmd/gokode@latest
+```
+
+This will install the `gokode` binary to your `$GOPATH/bin` (or `$GOBIN`). Make sure this directory is in your `PATH`.
+
+Alternatively, clone and build locally:
+
 ```bash
 git clone https://github.com/andro-kes/gokode.git
 cd gokode
-```
-
-Install dependencies (including golangci-lint v1.55.2):
-```bash
-make deps
-```
-
-Build the binary:
-```bash
-make build
-```
-
-Or build with Go directly:
-```bash
 go build -o gokode ./cmd/gokode
+# Optionally move to PATH: sudo mv gokode /usr/local/bin/
 ```
 
 ## Usage
 
-### CLI Tool
+### Quick Start
 
-Run analysis on the current directory:
+Run full analysis on your current project:
+
 ```bash
-./gokode analyse .
+gokode analyse .
 ```
 
-Run analysis on a specific directory:
+Run analysis on a specific project:
+
 ```bash
-./gokode analyse /path/to/your/project
+gokode analyse /path/to/your/project
 ```
 
-Run without building (using go run):
+### Available Commands
+
 ```bash
-go run ./cmd/gokode analyse .
+gokode <command> [path]
 ```
 
-The tool will generate two files in the `metrics/` directory:
-- `metrics/report.json` - JSON report with code metrics
-- `metrics/vet.txt` - Output from `go vet`
+**Commands:**
 
-### Makefile Targets
+- `analyse` - Run full analysis (fmt, vet, lint with fixes, test, coverage, gocyclo)
+- `fmt` - Format code with `gofmt`
+- `vet` - Run `go vet` and write output to `metrics/vet.txt`
+- `lint` - Run `golangci-lint` and write JSON to `metrics/report.json`
+- `lint-fix` - Run `golangci-lint` with `--fix` flag
+- `test` - Run tests with `go test ./...`
+- `coverage` - Run tests with coverage (creates `metrics/coverage.out` and `coverage.html`)
+- `gocyclo` - Run cyclomatic complexity analysis (writes to `metrics/gocyclo.txt`)
+- `tools` - Install required tools (`golangci-lint`, `gocyclo`)
 
-The project includes a comprehensive Makefile with the following targets:
+**Arguments:**
 
-- `make help` - Show all available targets
-- `make build` - Build the gokode binary
-- `make run` - Build and run the tool on the current directory
-- `make test` - Run all tests
-- `make vet` - Run go vet
-- `make fmt` - Format code with gofmt
-- `make lint` - Run golangci-lint
-- `make lint-fix` - Run golangci-lint with --fix
-- `make deps` - Install dependencies including golangci-lint
-- `make test-coverage` - Run tests with coverage and generate HTML report
-- `make analyse` - Run full analysis: format, vet, and lint with fixes
-- `make clean` - Clean build artifacts and metrics
-- `make docker-build` - Build Docker image
-- `make docker-run` - Build and run Docker container
+- `path` - Target directory (default: current directory `.`)
 
-### Full Analysis
+### Examples
 
-To run a complete code analysis (format, vet, lint):
 ```bash
-make analyse
+# Run full analysis on current directory
+gokode analyse .
+
+# Format code in a specific project
+gokode fmt ./myproject
+
+# Run linting with auto-fix
+gokode lint-fix /path/to/project
+
+# Generate test coverage report
+gokode coverage .
+
+# Check cyclomatic complexity
+gokode gocyclo .
+
+# Install required tools
+gokode tools
 ```
 
-This will:
-1. Format your code with `gofmt`
-2. Run `go vet` and write results to `metrics/vet.txt`
-3. Run `golangci-lint` with auto-fix enabled
-4. Generate a JSON report in `metrics/report.json`
+### Output Files
+
+All analysis reports are written to a `metrics/` directory in the target project:
+
+- `metrics/report.json` - golangci-lint results in JSON format
+- `metrics/vet.txt` - go vet output
+- `metrics/coverage.out` - test coverage profile
+- `metrics/coverage.html` - test coverage HTML report
+- `metrics/gocyclo.txt` - cyclomatic complexity analysis
+
+The `metrics/` directory is created automatically if it doesn't exist.
+
+## Tool Dependencies
+
+`gokode` requires the following tools, which will be automatically installed if not found:
+
+- **golangci-lint** (v1.60.3) - Comprehensive Go linter
+- **gocyclo** (latest) - Cyclomatic complexity analyzer
+
+To manually install all required tools:
+
+```bash
+gokode tools
+```
 
 ## Configuration
 
-### Linting Configuration
+### golangci-lint Configuration
 
-The project uses `.golangci.yml` for golangci-lint configuration. The configuration includes:
-- Common linters: errcheck, gosimple, govet, staticcheck, unused, gofmt, goimports, misspell, gocritic, revive, gosec
-- Output format: JSON
-- Go version: 1.24
+The tool respects `.golangci.yml` configuration files in your project. If present, golangci-lint will use your custom configuration. The default configuration includes:
 
-You can customize the linting rules by editing `.golangci.yml`.
+- Enabled linters: errcheck, gosimple, govet, staticcheck, unused, gofmt, goimports, misspell, gocritic, revive, gosec
+- JSON output format for `metrics/report.json`
+- 5-minute timeout for analysis
+
+### Timeout
+
+All operations have a default timeout of 5 minutes to prevent hanging on large projects.
 
 ## Development
 
-Run tests:
+### Running Tests
+
 ```bash
-make test
+go test ./... -v
 ```
 
-Generate test coverage:
+### Building Locally
+
 ```bash
-make test-coverage
+go build -o gokode ./cmd/gokode
 ```
 
-Format code:
+### Running on gokode Itself
+
 ```bash
-make fmt
+# Analyze the gokode project
+go run ./cmd/gokode analyse .
+
+# Or with the built binary
+./gokode analyse .
 ```
 
-Lint code:
-```bash
-make lint
+## CI/CD Integration
+
+Use `gokode` in your CI/CD pipelines for automated code quality checks:
+
+```yaml
+# GitHub Actions example
+- name: Install gokode
+  run: go install github.com/andro-kes/gokode/cmd/gokode@latest
+
+- name: Run analysis
+  run: gokode analyse .
+
+- name: Upload metrics
+  uses: actions/upload-artifact@v3
+  with:
+    name: metrics
+    path: metrics/
 ```
 
 ## Architecture
 
-The project consists of several components:
+The CLI is built with Go's standard library and executes external tools for analysis:
 
-- **Scanner**: Scans all .go files and sends them to the Parser through a channel
-- **Parser**: Reads from the channel and parses files line-by-line to extract metrics (active lines of code, number of functions)
-- **Analyser**: Analyzes the directory and collects metrics using commands like `go vet`
-- **Jsoner**: Handles JSON output and report generation
+- **Main CLI**: Command parsing and orchestration
+- **Format**: Executes `gofmt -w -s`
+- **Vet**: Executes `go vet ./...`
+- **Lint**: Executes `golangci-lint run --out-format json`
+- **Test/Coverage**: Executes `go test` with coverage flags
+- **Gocyclo**: Executes `gocyclo` for complexity analysis
 
-For more details, see [worker/README.md](worker/README.md).
+The legacy `worker/` package contains the original analyzer implementation and remains available for backward compatibility.
+
+## License
+
+This project is open source and available under the MIT License.

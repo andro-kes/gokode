@@ -12,7 +12,7 @@ import (
 const (
 	defaultTimeout      = 5 * time.Minute
 	golangciLintVersion = "v1.60.3"
-	gocycloVersion      = "latest"
+	gocycloVersion      = "v0.6.0"
 )
 
 func main() {
@@ -205,7 +205,7 @@ func runLint(ctx context.Context, path, metricsDir string, fix bool) int {
 	}
 
 	// Also print human-readable output to console
-	if len(output) > 0 && string(output) != "{}\n" && string(output) != "" {
+	if len(output) > 0 && string(output) != "{}\n" {
 		fmt.Println("Lint issues found:")
 		// Run again without JSON for console output
 		consoleCmd := exec.CommandContext(ctx, "golangci-lint", "run", "./...")
@@ -344,7 +344,7 @@ func installGolangciLint() error {
 
 func installGocyclo() error {
 	fmt.Printf("Installing gocyclo %s...\n", gocycloVersion)
-	cmd := exec.Command("go", "install", "github.com/fzipp/gocyclo/cmd/gocyclo@latest")
+	cmd := exec.Command("go", "install", fmt.Sprintf("github.com/fzipp/gocyclo/cmd/gocyclo@%s", gocycloVersion))
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()

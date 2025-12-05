@@ -167,7 +167,7 @@ Use `gokode` in your CI/CD pipelines for automated code quality checks:
   run: gokode analyse .
 
 - name: Upload metrics
-  uses: actions/upload-artifact@v3
+  uses: actions/upload-artifact@v4
   with:
     name: metrics
     path: metrics/

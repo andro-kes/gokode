@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func Init(t *testing.T) *os.File{
+func Init(t *testing.T) *os.File {
 	t.Helper()
 
 	file, err := os.Create("./test/vet.txt")

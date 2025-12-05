@@ -9,7 +9,7 @@ import (
 )
 
 type scanner struct {
-	Jsoner *jsoner.Jsoner
+	Jsoner   *jsoner.Jsoner
 	FileChan chan *os.File
 }
 
@@ -19,9 +19,9 @@ func NewScanner() *scanner {
 
 func (s *scanner) Scan() {
 	err := fp.Walk("./", func(filepath string, info os.FileInfo, err error) error {
-        if err != nil {
-            return err
-        }
+		if err != nil {
+			return err
+		}
 
 		if fp.Ext(filepath) == ".go" {
 			file, err := os.Open(fp.Join("./", filepath))
@@ -37,9 +37,9 @@ func (s *scanner) Scan() {
 				fmt.Fprintln(os.Stderr, "gokode: Channel was closed")
 			}
 		}
-        
-        return nil
-    })
+
+		return nil
+	})
 
 	defer close(s.FileChan)
 

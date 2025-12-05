@@ -8,17 +8,17 @@ import (
 )
 
 type Jsoner struct {
-	Data map[string]any
-	Mu sync.Mutex
+	Data    map[string]any
+	Mu      sync.Mutex
 	Encoder *json.Encoder
 }
 
 func NewJson(file *os.File) *Jsoner {
 	return &Jsoner{
-		Data: make(map[string]any),
+		Data:    make(map[string]any),
 		Encoder: json.NewEncoder(file),
 	}
-} 
+}
 
 func (j *Jsoner) Write() {
 	err := j.Encoder.Encode(j.Data)

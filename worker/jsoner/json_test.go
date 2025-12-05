@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-
 func Init(t *testing.T) (*Jsoner, *os.File) {
 	t.Helper()
 
@@ -20,7 +19,7 @@ func Init(t *testing.T) (*Jsoner, *os.File) {
 	jsoner.Data["1.go"] = map[string]any{
 		"number_of_rows": 5,
 	}
-	
+
 	return jsoner, file
 }
 
@@ -54,11 +53,11 @@ func TestWrite(t *testing.T) {
 		t.Skip(err)
 	}
 
-	if !reflect.DeepEqual(actual, expected){
+	if !reflect.DeepEqual(actual, expected) {
 		t.Skip("Данные не совпадают")
 	}
 
-	defer func(){
+	defer func() {
 		file.Close()
 		expectedJson.Close()
 	}()
@@ -96,13 +95,12 @@ func TestAddFileName(t *testing.T) {
 		t.Skip(err)
 	}
 
-	if !reflect.DeepEqual(actual, expected){
+	if !reflect.DeepEqual(actual, expected) {
 		t.Skip("Данные не совпадают")
 	}
 
-	defer func(){
+	defer func() {
 		file.Close()
 		expectedJson.Close()
 	}()
 }
-

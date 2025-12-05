@@ -1,0 +1,37 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+gokode
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+*.html
+
+# Dependency directories
+vendor/
+
+# Go workspace file
+go.work
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Metrics directory artifacts (keep directory but not generated files)
+metrics/*.json
+metrics/*.txt
+metrics/*.out
+metrics/*.html
+
+# OS specific files
+.DS_Store
+Thumbs.db

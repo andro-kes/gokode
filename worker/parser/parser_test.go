@@ -2,8 +2,8 @@ package parser
 
 import (
 	"os"
-	"testing"
 	fp "path/filepath"
+	"testing"
 
 	"github.com/andro-kes/gokode/worker/jsoner"
 )
@@ -37,9 +37,9 @@ func Walk(t *testing.T, prs *parser) {
 			prs.Jsoner.AddFileName(filepath)
 			prs.FileChan <- file
 		}
-        
-        return nil
-    })
+
+		return nil
+	})
 	close(prs.FileChan)
 }
 

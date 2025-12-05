@@ -12,8 +12,8 @@ const WORKERS int = 5
 
 type parser struct {
 	FileChan chan *os.File
-	Jsoner *jsoner.Jsoner
-	wg sync.WaitGroup
+	Jsoner   *jsoner.Jsoner
+	wg       sync.WaitGroup
 }
 
 func NewParser() *parser {

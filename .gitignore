@@ -4,7 +4,7 @@
 *.dll
 *.so
 *.dylib
-gokode
+/gokode
 
 # Test binary, built with `go test -c`
 *.test

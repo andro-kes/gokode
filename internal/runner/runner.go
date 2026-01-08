@@ -93,14 +93,25 @@ func RunLint(ctx context.Context, path, metricsDir string, fix bool) error {
 	}
 
 	// Also print human-readable output to console
-	if len(output) > 0 && string(output) != "{}\n" && string(output) != "{\n}\n" {
-		fmt.Println("Lint issues found:")
-		// Run again without JSON for console output
-		consoleCmd := exec.CommandContext(ctx, "golangci-lint", "run", "./...")
-		consoleCmd.Dir = path
-		consoleCmd.Stdout = os.Stdout
-		consoleCmd.Stderr = os.Stderr
-		_ = consoleCmd.Run() // Ignore error, we already have the JSON
+	if len(output) > 0 {
+		// Check if JSON has any actual issues
+		var lintReport struct {
+			Issues []interface{} `json:"Issues"`
+		}
+		hasIssues := false
+		if json.Unmarshal(output, &lintReport) == nil && len(lintReport.Issues) > 0 {
+			hasIssues = true
+		}
+
+		if hasIssues {
+			fmt.Println("Lint issues found:")
+			// Run again without JSON for console output
+			consoleCmd := exec.CommandContext(ctx, "golangci-lint", "run", "./...")
+			consoleCmd.Dir = path
+			consoleCmd.Stdout = os.Stdout
+			consoleCmd.Stderr = os.Stderr
+			_ = consoleCmd.Run() // Ignore error, we already have the JSON
+		}
 	}
 
 	if err != nil {

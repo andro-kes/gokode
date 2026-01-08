@@ -76,7 +76,7 @@ func collectMetrics(metricsDir string) (*MetricsSummary, error) {
 		summary.VetOutput = string(data)
 		trimmed := strings.TrimSpace(summary.VetOutput)
 		if trimmed != "" {
-			// Count non-empty lines as issues
+			// Count non-empty lines as issues (vet output typically consists of issue lines)
 			lines := strings.Split(trimmed, "\n")
 			for _, line := range lines {
 				if strings.TrimSpace(line) != "" {

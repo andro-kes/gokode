@@ -74,10 +74,14 @@ func collectMetrics(metricsDir string) (*MetricsSummary, error) {
 	vetFile := filepath.Join(metricsDir, "vet.txt")
 	if data, err := os.ReadFile(vetFile); err == nil {
 		summary.VetOutput = string(data)
-		if len(data) > 0 {
-			summary.VetIssueCount = strings.Count(summary.VetOutput, "\n")
-			if summary.VetIssueCount > 0 && !strings.HasSuffix(summary.VetOutput, "\n") {
-				summary.VetIssueCount++
+		trimmed := strings.TrimSpace(summary.VetOutput)
+		if trimmed != "" {
+			// Count non-empty lines as issues
+			lines := strings.Split(trimmed, "\n")
+			for _, line := range lines {
+				if strings.TrimSpace(line) != "" {
+					summary.VetIssueCount++
+				}
 			}
 		}
 	}
@@ -108,18 +112,17 @@ func collectMetrics(metricsDir string) (*MetricsSummary, error) {
 	gocycloFile := filepath.Join(metricsDir, "gocyclo.txt")
 	if data, err := os.ReadFile(gocycloFile); err == nil {
 		summary.GocycloOutput = string(data)
-		summary.GocycloLines = strings.Split(strings.TrimSpace(summary.GocycloOutput), "\n")
+		trimmed := strings.TrimSpace(summary.GocycloOutput)
+		if trimmed != "" {
+			summary.GocycloLines = strings.Split(trimmed, "\n")
+		}
 	}
 
 	return summary, nil
 }
 
 func renderHTML(summary *MetricsSummary) (string, error) {
-	tmpl := template.Must(template.New("report").Funcs(template.FuncMap{
-		"safeHTML": func(s string) template.HTML {
-			return template.HTML(s)
-		},
-	}).Parse(htmlTemplate))
+	tmpl := template.Must(template.New("report").Parse(htmlTemplate))
 
 	var buf strings.Builder
 	if err := tmpl.Execute(&buf, summary); err != nil {
